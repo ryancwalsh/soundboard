@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Soundboard</title>
@@ -7,21 +8,69 @@
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#2d89ef">
 </head>
+
 <body>
-  <h1>Our Soundboard</h1>
-  <div class="button-grid">
-    <button onclick="playSound('sounds/laugh.mp3')">Laugh</button>
-    <button onclick="playSound('sounds/cheer.mp3')">Cheer</button>
-  </div>
+
+  <div id="soundboard-container"></div>
 
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
     }
 
+    const sounds = {
+      'eat.mp3': 'Eat',
+      'eat.mp3': 'Play',
+      'eat.mp3': 'Catio'
+    };
+
+    // Dynamically generate the buttons
+    const soundboardContainer = document.getElementById('soundboard-container');
+
+    for (const [file, label] of Object.entries(sounds)) {
+      const soundControlDiv = document.createElement('div');
+      soundControlDiv.classList.add('sound-control');
+
+      // Create Play button
+      const playButton = document.createElement('button');
+      playButton.textContent = label;
+      playButton.onclick = () => playSound(`sounds/${file}`);
+      soundControlDiv.appendChild(playButton);
+
+      // Create Loop button
+      const loopButton = document.createElement('button');
+      loopButton.textContent = '🔁';
+      loopButton.onclick = () => toggleLoop(file, `sounds/${file}`);
+      soundControlDiv.appendChild(loopButton);
+
+      // Append sound control to container
+      soundboardContainer.appendChild(soundControlDiv);
+    }
+
+    // Simple one-shot play
     function playSound(file) {
       new Audio(file).play();
     }
+
+    // Track looping audios
+    const loopingSounds = {};
+
+    function toggleLoop(key, file) {
+      if (loopingSounds[key]) {
+        loopingSounds[key].pause();
+        loopingSounds[key].currentTime = 0;
+        delete loopingSounds[key];
+        console.log(key + " looping stopped.");
+      } else {
+        const audio = new Audio(file);
+        audio.loop = true;
+        audio.play();
+        loopingSounds[key] = audio;
+        console.log(key + " is now looping.");
+      }
+    }
   </script>
+
 </body>
+
 </html>
