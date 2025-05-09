@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 20px;
+  background: #f0f0f0;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+button {
+  padding: 20px;
+  font-size: 18px;
+  border: none;
+  background: #2d89ef;
+  color: white;
+  border-radius: 8px;
+}

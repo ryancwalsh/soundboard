@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Soundboard</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#2d89ef">
+</head>
+<body>
+  <h1>Our Soundboard</h1>
+  <div class="button-grid">
+    <button onclick="playSound('sounds/laugh.mp3')">Laugh</button>
+    <button onclick="playSound('sounds/cheer.mp3')">Cheer</button>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    function playSound(file) {
+      new Audio(file).play();
+    }
+  </script>
+</body>
+</html>
