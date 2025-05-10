@@ -40,7 +40,7 @@
       font-size: 20px;
       border: none;
       border-radius: 8px;
-      background: #2d89ef;
+      background: #4a2bd3;
       color: white;
       cursor: pointer;
       transition: background 0.2s ease;
@@ -64,7 +64,7 @@
 
   <div class="button-grid" id="soundboard-container"></div>
 
-  <button id="install-button" style="display: none;">Install as app</button>
+  <button id="install-button" style="display: none; font-size: 20px; margin-top: 100px;">Install as app</button>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
@@ -100,7 +100,8 @@
 
     const sounds = {
       'eat.mp3': '🍽️ Eat',
-      'bell-notification-337658.mp3': '🐦 Play', // https://pixabay.com/sound-effects/bell-notification-337658/
+      'birds-chirping-ambiance-26052.mp3': '🐦 Play', // https://pixabay.com/sound-effects/birds-chirping-ambiance-26052/
+      'bell-notification-337658.mp3': '🦷 Teeth',// https://pixabay.com/sound-effects/bell-notification-337658/
       // 'outdoors.mp3': '☀️ Outdoors'
     };
 

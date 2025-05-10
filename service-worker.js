@@ -1,7 +1,8 @@
+const version = 'v2'; // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
+
 self.addEventListener('install', function (event) {
   event.waitUntil(
-    // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
-    caches.open('v1').then(function (cache) {
+    caches.open(version).then(function (cache) {
       return cache.addAll([
         './',
         './index.html',
