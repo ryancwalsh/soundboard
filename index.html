@@ -57,6 +57,23 @@
     .sound-control button:last-child {
       flex: 1;
     }
+
+    #duration-control {
+      margin-top: 50px;
+      font-size: 18px;
+    }
+
+    #duration-control input {
+      font-size: 18px;
+      width: 60px;
+      padding: 5px;
+      margin-left: 10px;
+    }
+
+    #install-button {
+      font-size: 20px;
+      margin-top: 50px;
+    }
   </style>
 </head>
 
@@ -64,7 +81,13 @@
 
   <div class="button-grid" id="soundboard-container"></div>
 
-  <button id="install-button" style="display: none; font-size: 20px; margin-top: 100px;">Install as app</button>
+  <div id="duration-control">
+    ⏳ Loop duration (seconds):
+    <input type="number" id="loop-duration" value="30" min="1" max="6000">
+  </div>
+
+  <button id="install-button" style="display: none;">Install as app</button>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js');
@@ -73,26 +96,13 @@
     let deferredPrompt;
 
     window.addEventListener('beforeinstallprompt', (event) => {
-      // Prevent the default prompt from showing
       event.preventDefault();
-      // Save the event to show later
       deferredPrompt = event;
-
-      // Show your custom install prompt (e.g., a button)
-      // For example:
-      const installButton = document.getElementById('install-button');
-      installButton.style.display = 'block';
+      document.getElementById('install-button').style.display = 'block';
 
       installButton.addEventListener('click', () => {
-        // Show the prompt
         deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the A2HS prompt');
-          } else {
-            console.log('User dismissed the A2HS prompt');
-          }
+        deferredPrompt.userChoice.then(choiceResult => {
           deferredPrompt = null;
         });
       });
@@ -106,6 +116,8 @@
     };
 
     const soundboardContainer = document.getElementById('soundboard-container');
+    const loopingSounds = {};
+    const playingSounds = {};
 
     for (const [file, label] of Object.entries(sounds)) {
       const soundControlDiv = document.createElement('div');
@@ -113,33 +125,69 @@
 
       const playButton = document.createElement('button');
       playButton.textContent = label;
-      playButton.onclick = () => playSound(`sounds/${file}`);
-      soundControlDiv.appendChild(playButton);
 
       const loopButton = document.createElement('button');
       loopButton.textContent = '🔁';
-      loopButton.onclick = () => toggleLoop(file, `sounds/${file}`);
+
+      playButton.onclick = () => togglePlay(file, playButton);
+      loopButton.onclick = () => toggleLoop(file, loopButton);
+
+      soundControlDiv.appendChild(playButton);
       soundControlDiv.appendChild(loopButton);
 
       soundboardContainer.appendChild(soundControlDiv);
     }
 
-    function playSound(file) {
-      new Audio(file).play();
+    function togglePlay(file, button) {
+      if (playingSounds[file]) {
+        playingSounds[file].pause();
+        playingSounds[file].currentTime = 0;
+        delete playingSounds[file];
+        button.style.background = '#4a2bd3';
+      } else {
+        const audio = new Audio(`sounds/${file}`);
+        audio.onended = () => {
+          button.style.background = '#4a2bd3';
+          delete playingSounds[file];
+        };
+        audio.play();
+        playingSounds[file] = audio;
+        button.style.background = '#1e5fbd';
+      }
     }
 
-    const loopingSounds = {};
+    function toggleLoop(file, button) {
+      const durationInput = document.getElementById('loop-duration');
+      const duration = parseInt(durationInput.value) || 30;
 
-    function toggleLoop(key, file) {
-      if (loopingSounds[key]) {
-        loopingSounds[key].pause();
-        loopingSounds[key].currentTime = 0;
-        delete loopingSounds[key];
+      if (loopingSounds[file]) {
+        loopingSounds[file].audio.pause();
+        loopingSounds[file].audio.currentTime = 0;
+        clearInterval(loopingSounds[file].timer);
+        button.textContent = '🔁';
+        delete loopingSounds[file];
       } else {
-        const audio = new Audio(file);
+        const audio = new Audio(`sounds/${file}`);
         audio.loop = true;
         audio.play();
-        loopingSounds[key] = audio;
+
+        let remaining = duration;
+        button.textContent = remaining;
+
+        const timer = setInterval(() => {
+          remaining--;
+          if (remaining <= 0) {
+            audio.pause();
+            audio.currentTime = 0;
+            clearInterval(timer);
+            button.textContent = '🔁';
+            delete loopingSounds[file];
+          } else {
+            button.textContent = remaining;
+          }
+        }, 1000);
+
+        loopingSounds[file] = { audio, timer };
       }
     }
   </script>
