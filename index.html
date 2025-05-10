@@ -4,14 +4,65 @@
 <head>
   <meta charset="UTF-8">
   <title>Soundboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#2d89ef">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .button-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .sound-control {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .sound-control button {
+      flex: 1;
+      padding: 16px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      background: #2d89ef;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .sound-control button:hover {
+      background: #1e5fbd;
+    }
+
+    .sound-control button:first-child {
+      flex: 2;
+    }
+
+    .sound-control button:last-child {
+      flex: 1;
+    }
+  </style>
 </head>
 
 <body>
 
-  <div id="soundboard-container"></div>
+  <div class="button-grid" id="soundboard-container"></div>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -19,40 +70,34 @@
     }
 
     const sounds = {
-      'eat.mp3': 'Eat',
-      'eat.mp3': 'Play',
-      'eat.mp3': 'Catio'
+      'eat.mp3': '🍽️ Eat',
+      'bell-notification-337658.mp3': '🐦 Play', // https://pixabay.com/sound-effects/bell-notification-337658/
+      // 'outdoors.mp3': '☀️ Outdoors'
     };
 
-    // Dynamically generate the buttons
     const soundboardContainer = document.getElementById('soundboard-container');
 
     for (const [file, label] of Object.entries(sounds)) {
       const soundControlDiv = document.createElement('div');
       soundControlDiv.classList.add('sound-control');
 
-      // Create Play button
       const playButton = document.createElement('button');
       playButton.textContent = label;
       playButton.onclick = () => playSound(`sounds/${file}`);
       soundControlDiv.appendChild(playButton);
 
-      // Create Loop button
       const loopButton = document.createElement('button');
       loopButton.textContent = '🔁';
       loopButton.onclick = () => toggleLoop(file, `sounds/${file}`);
       soundControlDiv.appendChild(loopButton);
 
-      // Append sound control to container
       soundboardContainer.appendChild(soundControlDiv);
     }
 
-    // Simple one-shot play
     function playSound(file) {
       new Audio(file).play();
     }
 
-    // Track looping audios
     const loopingSounds = {};
 
     function toggleLoop(key, file) {
@@ -60,13 +105,11 @@
         loopingSounds[key].pause();
         loopingSounds[key].currentTime = 0;
         delete loopingSounds[key];
-        console.log(key + " looping stopped.");
       } else {
         const audio = new Audio(file);
         audio.loop = true;
         audio.play();
         loopingSounds[key] = audio;
-        console.log(key + " is now looping.");
       }
     }
   </script>
