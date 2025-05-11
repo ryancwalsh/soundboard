@@ -1,4 +1,4 @@
-const version = 'v2'; // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
+const version = 'v3'; // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
@@ -9,6 +9,7 @@ self.addEventListener('install', function (event) {
         './manifest.json',
         './sounds/eat.mp3',
         './sounds/play.mp3',
+        './sounds/teeth.mp3',
         './sounds/catio.mp3',
         './icon-192.png',
         './icon-512.png'
