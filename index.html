@@ -59,8 +59,8 @@
     }
 
     #duration-control {
-      margin-top: 50px;
-      font-size: 18px;
+      margin-bottom: 50px;
+      font-size: 12px;
     }
 
     #duration-control input {
@@ -89,17 +89,15 @@
       cursor: not-allowed;
     }
 
-
     #install-button {
       font-size: 20px;
-      margin-top: 50px;
+      margin: auto;
+      margin-top: 90px;
     }
   </style>
 </head>
 
 <body>
-
-  <div class="button-grid" id="soundboard-container"></div>
 
   <div id="duration-control">
     ⏳ Loop duration (seconds):
@@ -112,6 +110,7 @@
     <button id="increase-duration">+30</button>
   </div>
 
+  <div class="button-grid" id="soundboard-container"></div>
 
   <button id="install-button" style="display: none;">Install as app</button>
 
@@ -148,14 +147,14 @@
     }
 
     decreaseButton.addEventListener('click', () => {
-      let value = parseInt(durationInput.value) || 0;
+      let value = parseInt(durationInput.value) ?? 0;
       value = Math.max(durationMin, value - durationDelta);
       durationInput.value = value;
       updateDecreaseButtonState();
     });
 
     increaseButton.addEventListener('click', () => {
-      let value = parseInt(durationInput.value) || 0;
+      let value = parseInt(durationInput.value) ?? 0;
       value = Math.min(durationMax, value + durationDelta);
       durationInput.value = value;
       updateDecreaseButtonState();
@@ -186,45 +185,24 @@
       const playButton = document.createElement('button');
       playButton.textContent = label;
 
-      const loopButton = document.createElement('button');
-      loopButton.textContent = '🔁';
-
-      playButton.onclick = () => togglePlay(file, playButton);
-      loopButton.onclick = () => toggleLoop(file, loopButton);
+      playButton.onclick = () => toggleLoop(file, playButton, label);
 
       soundControlDiv.appendChild(playButton);
-      soundControlDiv.appendChild(loopButton);
 
       soundboardContainer.appendChild(soundControlDiv);
     }
 
-    function togglePlay(file, button) {
-      if (playingSounds[file]) {
-        playingSounds[file].pause();
-        playingSounds[file].currentTime = 0;
-        delete playingSounds[file];
-        button.style.background = '#4a2bd3';
-      } else {
-        const audio = new Audio(`sounds/${file}`);
-        audio.onended = () => {
-          button.style.background = '#4a2bd3';
-          delete playingSounds[file];
-        };
-        audio.play();
-        playingSounds[file] = audio;
-        button.style.background = '#1e5fbd';
-      }
-    }
-
-    function toggleLoop(file, button) {
+    function toggleLoop(file, button, label) {
       const durationInput = document.getElementById('loop-duration');
-      const duration = parseInt(durationInput.value) || 30;
+      const duration = parseInt(durationInput.value) ?? 30;
+
+      const originalText = label;
 
       if (loopingSounds[file]) {
         loopingSounds[file].audio.pause();
         loopingSounds[file].audio.currentTime = 0;
         clearInterval(loopingSounds[file].timer);
-        button.textContent = '🔁';
+        button.textContent = originalText;
         delete loopingSounds[file];
       } else {
         const audio = new Audio(`sounds/${file}`);
@@ -232,7 +210,7 @@
         audio.play();
 
         let remaining = duration;
-        button.textContent = remaining;
+        button.textContent = `${originalText} 🔁 ${remaining}`;
 
         const timer = setInterval(() => {
           remaining--;
@@ -240,10 +218,10 @@
             audio.pause();
             audio.currentTime = 0;
             clearInterval(timer);
-            button.textContent = '🔁';
+            button.textContent = originalText;
             delete loopingSounds[file];
           } else {
-            button.textContent = remaining;
+            button.textContent = `${originalText} 🔁 ${remaining}`;
           }
         }, 1000);
 
