@@ -67,8 +67,28 @@
       font-size: 18px;
       width: 60px;
       padding: 5px;
-      margin-left: 10px;
     }
+
+    #duration-control button {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #4a2bd3;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    #duration-control button:hover:enabled {
+      background: #1e5fbd;
+    }
+
+    #duration-control button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
 
     #install-button {
       font-size: 20px;
@@ -83,8 +103,15 @@
 
   <div id="duration-control">
     ⏳ Loop duration (seconds):
-    <input type="number" id="loop-duration" value="30" min="1" max="6000">
+
+    <button id="decrease-duration">-30</button>
+
+    <!-- Must match durationMin and durationMax in JavaScript. -->
+    <input type="number" id="loop-duration" value="60" min="1" max="6000">
+
+    <button id="increase-duration">+30</button>
   </div>
+
 
   <button id="install-button" style="display: none;">Install as app</button>
 
@@ -107,6 +134,36 @@
         });
       });
     });
+
+    const decreaseButton = document.getElementById('decrease-duration');
+    const increaseButton = document.getElementById('increase-duration');
+    const durationInput = document.getElementById('loop-duration');
+
+    const durationDelta = 30;
+    const durationMax = 6_000;
+    const durationMin = 1;
+
+    function updateDecreaseButtonState() {
+      decreaseButton.disabled = parseInt(durationInput.value) < (durationMin + durationDelta);
+    }
+
+    decreaseButton.addEventListener('click', () => {
+      let value = parseInt(durationInput.value) || 0;
+      value = Math.max(durationMin, value - durationDelta);
+      durationInput.value = value;
+      updateDecreaseButtonState();
+    });
+
+    increaseButton.addEventListener('click', () => {
+      let value = parseInt(durationInput.value) || 0;
+      value = Math.min(durationMax, value + durationDelta);
+      durationInput.value = value;
+      updateDecreaseButtonState();
+    });
+
+    durationInput.addEventListener('input', updateDecreaseButtonState);
+
+    updateDecreaseButtonState();
 
     /**
      * Remember to match with the values being cached in `service-worker.js`.
