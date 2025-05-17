@@ -1,4 +1,4 @@
-const version = 'v5'; // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
+const version = 'v6'; // If you ever update sounds or code and want to force-refresh the cache, increment the cache name to 'v2', etc.
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
